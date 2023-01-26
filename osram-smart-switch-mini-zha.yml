@@ -1,126 +1,130 @@
 blueprint:
-  name: Zigbee2MQTT - OSRAM Smart+ switch mini (AC0251100NJ/AC0251700NJ) actions
-  description: >
-    Define actions for your OSRAM Smart+ switch mini  using Zigbee2MQTT.
-    For your button entity, choose the right sensor with your button name and the entity id which ends with '_action', e.g. 'sensor.kitchen.switch_action'
+  name: ZHA - Osram Smart+ Switch Mini
+  description: Automate your Osram Smart+ Switch Mini Scene Switch using ZHA events.
   domain: automation
   input:
-    remote:
-      name: OSRAM Smart+ switch mini  sensor entity
-      description: Sensor for OSRAM Smart+ switch mini to use (Use sensor with entity_id ends with _action)
+    tuya_4button_scene_switch:
+      name: Osram Smart+ Switch Mini Scene Switch
+      description: Osram Smart+ Switch Mini Scene Switch to use
       selector:
         device:
           integration: zha
           manufacturer: OSRAM
-    remote_button_up:
-      name: Up Press
-      description: Action to run on up press
+    button_one_short_press:
+      name: Single Press
+      description: Action to run on button 1 (lower-left) single press
       default: []
       selector:
-        action:
-    remote_button_up_hold:
-      name: Up Hold
-      description: Action to run on up hold
+        action: {}
+    button_one_double_press:
+      name: Double Press
+      description: Action to run on button 1 (lower-left) double press
       default: []
       selector:
-        action:
-    remote_button_up_release:
-      name: Up Release
-      description: Action to run on up release
+        action: {}
+    button_one_long_press:
+      name: Long Press
+      description: Action to run on button 1 (lower-left) long press
       default: []
       selector:
-        action:
-    remote_button_circle:
-      name: Circle Press
-      description: Action to run on circle press
+         action: {}
+    button_two_short_press:
+      name: Single Press
+      description: Action to run on button 2 (lower-right) single press
       default: []
       selector:
-        action:
-    remote_button_circle_hold:
-      name: Circle Hold
-      description: Action to run on circle hold
+        action: {}
+    button_two_double_press:
+      name: Double Press
+      description: Action to run on button 2 (lower-right) double press
       default: []
       selector:
-        action:
-    remote_button_circle_release:
-      name: Circle Release
-      description: Action to run on circle release
+        action: {}
+    button_two_long_press:
+      name: Long Press
+      description: Action to run on button 2 (lower-right) long press
       default: []
       selector:
-        action:
-    remote_button_down:
-      name: Down Press
-      description: Action to run on down press
+         action: {}
+    button_three_short_press:
+      name: Single Press
+      description: Action to run on button 3 (upper-right) single press
       default: []
       selector:
-        action:
-    remote_button_down_hold:
-      name: Down Hold
-      description: Action to run on down hold
+        action: {}
+    button_three_double_press:
+      name: Double Press
+      description: Action to run on button 3 (upper-right) double press
       default: []
       selector:
-        action:
-    remote_button_down_release:
-      name: Down Release
-      description: Action to run on down release
+        action: {}
+    button_three_long_press:
+      name: Long Press
+      description: Action to run on button 3 (upper-right) long press
       default: []
       selector:
-        action:
-
+         action: {}
+    button_four_short_press:
+      name: Single Press
+      description: Action to run on button 4 (upper-left) single press
+      default: []
+      selector:
+        action: {}
+    button_four_double_press:
+      name: Double Press
+      description: Action to run on button 4 (upper-left) double press
+      default: []
+      selector:
+        action: {}
+    button_four_long_press:
+      name: Long Press
+      description: Action to run on button 4 (upper-left) long press
+      default: []
+      selector:
+         action: {}
 mode: restart
 max_exceeded: silent
-
-# Each option is explicitly defined as a trigger because sensor reports empty values as well.
-# Not defining explicit triggers causes the automation to show up in the log multiple times per button press.
 trigger:
-  - platform: state
-    entity_id: !input button_sensor
-    to: 'up'
-  - platform: state
-    entity_id: !input button_sensor
-    to: 'up_hold'
-  - platform: state
-    entity_id: !input button_sensor
-    to: 'up_release'
-  - platform: state
-    entity_id: !input button_sensor
-    to: 'circle_click'
-  - platform: state
-    entity_id: !input button_sensor
-    to: 'circle_hold'
-  - platform: state
-    entity_id: !input button_sensor
-    to: 'circle_release'
-  - platform: state
-    entity_id: !input button_sensor
-    to: 'down'
-  - platform: state
-    entity_id: !input button_sensor
-    to: 'down_hold'
-  - platform: state
-    entity_id: !input button_sensor
-    to: 'down_release'
-
+- platform: event
+  event_type: zha_event
+  event_data:
+    device_id: !input 'tuya_4button_scene_switch'
 action:
-  - variables:
-      action: "{{ trigger.to_state.state }}"
+- variables:
+    command: '{{ trigger.event.data.command }}'
+    endpoint_id: '{{ trigger.event.data.endpoint_id }}'
+- choose:
+  - conditions: "{{ command == 'remote_button_short_press' }}"
+    sequence:
+    - choose:
+      - conditions: '{{ endpoint_id == 1 }}'
+        sequence: !input 'button_one_short_press'
+      - conditions: '{{ endpoint_id == 2 }}'
+        sequence: !input 'button_two_short_press'
+      - conditions: '{{ endpoint_id == 3 }}'
+        sequence: !input 'button_three_short_press'
+      - conditions: '{{ endpoint_id == 4 }}'
+        sequence: !input 'button_four_short_press'
+  - conditions: "{{ command == 'remote_button_double_press' }}"
+    sequence:
+    - choose:
+      - conditions: '{{ endpoint_id == 1 }}'
+        sequence: !input 'button_one_double_press'
+      - conditions: '{{ endpoint_id == 2 }}'
+        sequence: !input 'button_two_double_press'
+      - conditions: '{{ endpoint_id == 3 }}'
+        sequence: !input 'button_three_double_press'
+      - conditions: '{{ endpoint_id == 4 }}'
+        sequence: !input 'button_four_double_press'
+  - conditions: "{{ command == 'remote_button_long_press' }}"
+    sequence:
+    - choose:
+      - conditions: '{{ endpoint_id == 1 }}'
+        sequence: !input 'button_one_long_press'
+      - conditions: '{{ endpoint_id == 2 }}'
+        sequence: !input 'button_two_long_press'
+      - conditions: '{{ endpoint_id == 3 }}'
+        sequence: !input 'button_three_long_press'
+      - conditions: '{{ endpoint_id == 4 }}'
+        sequence: !input 'button_four_long_press'
 
-  - choose:
-      - conditions: "{{ action == 'up' }}"
-        sequence: !input remote_button_up
-      - conditions: "{{ action == 'up_hold' }}"
-        sequence: !input remote_button_up_hold
-      - conditions: "{{ action == 'up_release' }}"
-        sequence: !input remote_button_up_release
-      - conditions: "{{ action == 'circle_click' }}"
-        sequence: !input remote_button_circle
-      - conditions: "{{ action == 'circle_hold' }}"
-        sequence: !input remote_button_circle_hold
-      - conditions: "{{ action == 'circle_release' }}"
-        sequence: !input remote_button_circle_release
-      - conditions: "{{ action == 'down' }}"
-        sequence: !input remote_button_down
-      - conditions: "{{ action == 'down_hold' }}"
-        sequence: !input remote_button_down_hold
-      - conditions: "{{ action == 'down_release' }}"
-        sequence: !input remote_button_down_release
