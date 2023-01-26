@@ -65,21 +65,21 @@ action:
     - conditions: '{{ endpoint_id == 1 }}'
       sequence:
       - choose:
-        - conditions: '{{ command == on }}'
+        - conditions: '{{ command == "on" }}'
           sequence: !input up_button_short_press
-        - conditions: '{{ command == move_with_on_off }}'
+        - conditions: '{{ command == "move_with_on_off" }}'
           sequence: !input up_button_long_press
     - conditions: '{{ endpoint_id == 2 }}'
       sequence:
       - choose:
-        - conditions: '{{ command == off }}'
+        - conditions: '{{ command == "off" }}'
           sequence: !input down_button_short_press
-        - conditions: '{{ command == move }}'
+        - conditions: '{{ command == "move" }}'
           sequence: !input down_button_long_press
     - conditions: '{{ endpoint_id == 3 }}'
       sequence:
       - choose:
-        - conditions: '{{ command == move_to_level_with_on_off }}'
+        - conditions: '{{ command == "move_to_level_with_on_off" }}'
           sequence: !input middle_button_short_press
-        - conditions: '{{ command == move_hue }}'
+        - conditions: '{{ command == "move_hue" }}'
           sequence: !input middle_button_long_press
